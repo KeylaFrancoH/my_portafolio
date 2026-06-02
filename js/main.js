@@ -148,9 +148,27 @@ const projectMeta = {
   },
   'Species_Detector': {
     category: 'ai',
-    tags: ['Computer Vision', 'AI', 'GIS', 'Vercel'],
-    descriptionEn: 'AI-powered species detection system combining computer vision with geospatial context. Deployed on Vercel.',
-    descriptionEs: 'Sistema de detección de especies con IA que combina visión computacional con contexto geoespacial. Desplegado en Vercel.',
+    tags: ['Computer Vision', 'AI', 'Python', 'Hugging Face'],
+    descriptionEn: 'AI-powered species detection system using computer vision and deep learning. Deployed on Hugging Face Spaces.',
+    descriptionEs: 'Sistema de detección de especies con IA usando visión computacional y deep learning. Desplegado en Hugging Face Spaces.',
+  },
+  'Person_Detector': {
+    category: 'ai',
+    tags: ['Computer Vision', 'AI', 'Python', 'GIS'],
+    descriptionEn: 'AI-powered person detection system combining computer vision with geospatial context. Deployed on Vercel.',
+    descriptionEs: 'Sistema de detección de personas con IA que combina visión computacional con contexto geoespacial. Desplegado en Vercel.',
+  },
+  'ai-tree-monitoring-platform': {
+    category: 'gis',
+    tags: ['AI', 'GIS', 'Environmental', 'Python'],
+    descriptionEn: 'AI-powered platform for environmental tree monitoring, geospatial analysis, and reporting.',
+    descriptionEs: 'Plataforma con IA para monitoreo ambiental de árboles, análisis geoespacial y generación de reportes.',
+  },
+  'invoice-management-system': {
+    category: 'fullstack',
+    tags: ['JavaScript', 'Invoice', 'Full Stack'],
+    descriptionEn: 'Invoice management system with real-time data handling and a modern, responsive interface.',
+    descriptionEs: 'Sistema de gestión de facturas con manejo de datos en tiempo real e interfaz moderna y responsiva.',
   },
   'Integradora': {
     category: 'fullstack',
@@ -158,24 +176,11 @@ const projectMeta = {
     descriptionEn: 'Full-stack integrative project combining multiple systems and services in a unified platform.',
     descriptionEs: 'Proyecto integrador full-stack que combina múltiples sistemas y servicios en una plataforma unificada.',
   },
-  'invoice-proyect': {
-    category: 'fullstack',
-    tags: ['JavaScript', 'Invoice', 'Full Stack'],
-    descriptionEn: 'Invoice management system with real-time data handling and a modern, responsive interface.',
-    descriptionEs: 'Sistema de gestión de facturas con manejo de datos en tiempo real e interfaz moderna y responsiva.',
-  },
-  'tree_platform': {
-    category: 'data',
-    tags: ['Platform', 'Environmental', 'Data'],
-    descriptionEn: 'Data management platform for environmental tree monitoring, analysis, and reporting.',
-    descriptionEs: 'Plataforma de gestión de datos para monitoreo, análisis y reporte ambiental de árboles.',
-  },
 };
 
 // ── State ─────────────────────────────────────────────
 const GITHUB_USER  = 'KeylaFrancoH';
 const CACHE_KEY    = 'kfh-portfolio-repos';
-const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 const EXCLUDED     = ['my_portafolio'];
 
 let currentLang  = localStorage.getItem('kfh-lang') || 'en';
@@ -237,12 +242,12 @@ function toggleLang() {
 
 // ── GitHub fetch ──────────────────────────────────────
 async function fetchProjects() {
-  // Try localStorage cache first
+  // sessionStorage cache: fresh on every new page load, reused only within the same session
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = sessionStorage.getItem(CACHE_KEY);
     if (raw) {
-      const { data, ts } = JSON.parse(raw);
-      if (Date.now() - ts < CACHE_TTL_MS && Array.isArray(data)) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) {
         allRepos = data;
         renderProjects(allRepos);
         return;
@@ -253,13 +258,13 @@ async function fetchProjects() {
   // Live fetch
   try {
     const res  = await fetch(
-      `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=updated`,
+      `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=updated&type=public`,
       { headers: { Accept: 'application/vnd.github+json' } }
     );
     if (!res.ok) throw new Error(`GitHub API ${res.status}`);
     const data = await res.json();
     allRepos = data.filter(r => !r.fork && !EXCLUDED.includes(r.name));
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ data: allRepos, ts: Date.now() }));
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify(allRepos));
     renderProjects(allRepos);
   } catch (err) {
     const loading = document.getElementById('projectsLoading');
