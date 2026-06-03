@@ -230,6 +230,14 @@ function applyTranslations() {
     toggle.querySelector('.lang-other').textContent   = currentLang === 'en' ? 'ES' : 'EN';
   }
 
+  // Swap CV download link based on language
+  const cvLink = document.getElementById('cvLink');
+  if (cvLink) {
+    cvLink.href = currentLang === 'en'
+      ? 'cvs/Engr.%20Keyla%20Fernanda_Franco%20Hidalgo_Resume.pdf'
+      : 'cvs/Ing.%20Keyla%20Fernanda_Franco%20Hidalgo_CV.pdf';
+  }
+
   // Re-render cards with updated descriptions
   if (allRepos.length > 0) renderProjects(allRepos);
 }
