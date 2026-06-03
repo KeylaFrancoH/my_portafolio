@@ -234,8 +234,8 @@ function applyTranslations() {
   const cvLink = document.getElementById('cvLink');
   if (cvLink) {
     cvLink.href = currentLang === 'en'
-      ? '/EngKeylaFrancoCV.pdf'
-      : '/IngKeylaFrancoCV.pdf';
+      ? '/public/EngKeylaFrancoCV.pdf'
+      : '/public/IngKeylaFrancoCV.pdf';
   }
 
   // Re-render cards with updated descriptions
